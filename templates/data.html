@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="static/data.css">
+<link rel="stylesheet" type="text/css" href="static/links.css">
+</head>
+<body>
+
+  <div>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('get_data') }}">Refresh</a>
+  </div>
+  <hr>
+
+<table id="data">
+  <tr>
+    <th>Data</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td> Battery Voltage</td>
+    <td>{{ batt_voltage }} V</td>
+  </tr>
+  <tr>
+    <td> Battery Full Voltage</td>
+    <td>{{ batt_full_voltage }} V</td>
+  </tr>
+  <tr>
+    <td>Battery Overdischarge Voltage</td>
+    <td>{{ batt_overdischarge_voltage }} V</td>
+  </tr>
+  <tr>
+    <td>Battery Temp</td>
+    <td>{{ batt_temp }} &degC</td>
+  </tr>
+  <tr>
+    <td>Solar Panel(PV) Voltage</td>
+    <td>{{ pv_voltage }} V</td>
+  </tr>
+  <tr>
+    <td>Charge Current</td>
+    <td>{{ charge_current }} A</td>
+  </tr>
+  <tr>
+    <td>Load On</td>
+    <td>{{ load_on }}</td>
+  </tr>
+  <tr>
+    <td>Load Current</td>
+    <td>{{ load_amps }} A</td>
+  </tr>
+  <tr>
+    <td>Load Overloaded</td>
+    <td>{{ load_overload }}
+  </tr>
+  <tr>
+    <td>Load Short</td>
+    <td>{{ load_short }}
+  </tr>
+  <tr>
+    <td>Battery Overloaded</td>
+    <td>{{ batt_overload }}
+  </tr>
+  <tr>
+    <td>Battery Overdischarged</td>
+    <td>{{ batt_overdischarge }}
+  </tr>
+  <tr>
+    <td>Battery Full</td>
+    <td>{{ batt_full }}
+  </tr>
+  <tr>
+    <td>Battery Charging</td>
+    <td>{{ batt_charging }}
+  </tr>
+</table>
+
+<p><a href="{{ url_for('get_data') }}">Refresh</a></p>
+
+</body>
+</html

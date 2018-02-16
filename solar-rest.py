@@ -3,7 +3,7 @@ from time import sleep
 from serial import Serial
 
 import sys
-sys.path.append('/home/pi/tracer/python')
+sys.path.append('/home/pi/tracer1210/python')
 from tracer import Tracer, TracerSerial, QueryCommand
 
 port = Serial('/dev/ttyAMA0', 9600, timeout=1)

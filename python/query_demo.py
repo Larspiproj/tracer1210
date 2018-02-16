@@ -29,6 +29,15 @@ query = QueryCommand()
 t_ser.send_command(query)
 result = t_ser.receive_result()
 
+print("result.data:\n", result.data)
+print(type(result.data))
+print("result:\n", result)
+print(type(result))
+data = str(result)
+print("str(result):\n", data)
+print(type(str(result)))
+#for i in data:
+#    print(i)
 print ("Raw bytes: %s" % ", ".join(map(lambda a: "%0X" % (a), result.data)))
 print
 formatted = str(result).replace('{', '{\n')
