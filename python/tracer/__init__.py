@@ -120,9 +120,11 @@ class TracerSerial(object):
         to_read = 200
 
         b = bytearray(b'\x00')
-        while int.from_bytes(b, byteorder='little') >= 0 and read_idx < (to_read + 12):
+        #while int.from_bytes(b, byteorder='little') >= 0 and read_idx < (to_read + 12):
+        while b >= bytearray(b'\x00') and read_idx < (to_read + 12):
             b = bytearray(self.port.read(1))
-            if not int.from_bytes(b, byteorder='little') >= 0:
+            #if not int.from_bytes(b, byteorder='little') >= 0:
+            if not b >= bytearray(b'\x00'):
                 break
             buff += b
             if read_idx < len(self.sync_header) and b[0] != self.sync_header[read_idx]:
