@@ -16,10 +16,6 @@ class Result(object):
         self.data = data
         self.decode(data)
 
-    def decode(self, data):
-        """Decodes the result, storing data as fields"""
-        pass
-
     def to_float(self, two_bytes):
         """Convert a list of two bytes into a floating point value."""
         # convert two bytes to a float value
@@ -51,31 +47,6 @@ class QueryResult(Result):
         self.batt_temp = data[20] - 30;
         self.charge_current = self.to_float(data[21:23])
 
-class Command(object):
-    """A command sent to the controller"""
-    def __init__(self, code, data=bytearray()):
-        self.code = code
-        self.data = data
-    def decode_result(self, data):
-        """Decodes the data, storing it in fields"""
-        pass
-
-class QueryCommand(Command):
-    """A command that queries the status of the controller"""
-    def __init__(self):
-        Command.__init__(self, 0xA0)
-    def decode_result(self, data):
-        return QueryResult(data)
-
-class ManualCommand(Command):
-    """A command that turns the load on or off"""
-    def __init__(self, state):
-        if state:
-            data = [0x01]
-        else:
-            data = [0x00]
-        Command.__init__(self, 0xAA, data)
-
 class TracerSerial(object):
     """A serial interface to the Tracer"""
     sync_header = bytearray([0xEB, 0x90] * 3)
@@ -89,9 +60,9 @@ class TracerSerial(object):
         self.tracer = tracer
         self.port = port
 
-    def to_bytes(self, command):
+    def to_bytes(self, command, load_command, switch_command):
         """Converts the command into the bytes that should be sent"""
-        cmd_data = self.tracer.get_command_bytes(command) + bytearray(b'\x00\x00\x7F')
+        cmd_data = self.tracer.get_command_bytes(command, load_command, switch_command) + bytearray(b'\x00\x00\x7F')
         crc_data = self.tracer.add_crc(cmd_data)
         to_send = self.comm_init + crc_data
 
@@ -100,18 +71,27 @@ class TracerSerial(object):
     def from_bytes(self, data):
         """Given bytes from the serial port, returns the appropriate command result"""
         if data[0:6] != self.sync_header:
-            raise Exception("Invalid sync header")
+            raise IOError("Invalid sync header")
         if len(data) != data[8] + 12:
-            raise Exception("Invalid length. Expecting %d, got %d" % (data[8] + 12, len(data)))
+            raise IOError("Invalid length. Expecting %d, got %d" % (data[8] + 12, len(data)))
         if not self.tracer.verify_crc(data[6:]):
             print("invalid crc")
 	    #raise Exception("Invalid CRC")
         return self.tracer.get_result(data[6:])
 
-    def send_command(self, command):
-        to_send = self.to_bytes(command)
+    def send_command(self, command, load_command = None, switch_command = None):
+        to_send = self.to_bytes(command, load_command, switch_command)
         if len(to_send) != self.port.write(to_send):
             raise IOError("Error sending command: did not send all bytes")
+
+    """
+    def receive_result(self, length):
+        self.length = length
+        waiting = self.port.in_waiting
+        buff = self.port.read(waiting)
+
+        return self.from_bytes(buff)
+    """
 
     def receive_result(self):
         buff = bytearray()
@@ -129,7 +109,7 @@ class TracerSerial(object):
             buff += b
             if read_idx < len(self.sync_header) and b[0] != self.sync_header[read_idx]:
                 raise IOError("Error receiving result: invalid sync header")
-            # the location of the read length
+             #the location of the read length
             elif read_idx == 8:
                 to_read = b[0]
             read_idx += 1
@@ -143,20 +123,25 @@ class Tracer(object):
         controller_id - the unit this was tested with is 0x16"""
         self.controller_id = controller_id
 
-    def get_command_bytes(self, command):
+    def get_command_bytes(self, command, load_command, switch_command):
         """Given a command, gets its byte representation
 
         This excludes the header, CRC, and trailer."""
         data = bytearray()
         data.append(self.controller_id)
-        data.append(command.code)
-        data.append(len(command.data))
-        data += command.data
+        data.append(command)
+        if load_command != None:
+            data.append(load_command)
+        if switch_command != None:
+            data.append(switch_command)
+        if load_command == None and switch_command == None:
+            data.append(0x00)
 
         return data
 
     def get_result(self, data):
-        if data[1] == QueryCommand().code:
+        #if data[1] == QueryCommand().code:
+        if data[1] == 0xA0:
             return QueryResult(data[3:])
 
     def verify_crc(self, data):
@@ -175,10 +160,10 @@ class Tracer(object):
         crc = self.crc(data, data[2] + 5)
         data[data[2] + 3] = crc >> 8
         data[data[2] + 4] = crc & 0xFF
-
         return data
 
     def crc(self, data, crc_len):
+
         """Calculates the Tracer CRC for the given data"""
         i = j = r1 = r2 = r3 = r4 = 0
         result = 0
