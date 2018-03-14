@@ -47,6 +47,18 @@ class QueryResult(Result):
         self.batt_temp = data[20] - 30;
         self.charge_current = self.to_float(data[21:23])
 
+
+class LoadState(object):
+    def __init__(self, data):
+        self.data = data
+        self.decode(data)
+
+    def decode(self, data):
+        if self.data == 0:
+            self.load_state = "OFF"
+        else:
+            self.load_state = "ON"
+
 class TracerSerial(object):
     """A serial interface to the Tracer"""
     sync_header = bytearray([0xEB, 0x90] * 3)
@@ -71,9 +83,9 @@ class TracerSerial(object):
     def from_bytes(self, data):
         """Given bytes from the serial port, returns the appropriate command result"""
         if data[0:6] != self.sync_header:
-            raise IOError("Invalid sync header")
+            raise Exception("Invalid sync header")
         if len(data) != data[8] + 12:
-            raise IOError("Invalid length. Expecting %d, got %d" % (data[8] + 12, len(data)))
+            raise Exception("Invalid length. Expecting %d, got %d" % (data[8] + 12, len(data)))
         if not self.tracer.verify_crc(data[6:]):
             print("invalid crc")
 	    #raise Exception("Invalid CRC")
@@ -84,6 +96,7 @@ class TracerSerial(object):
         if len(to_send) != self.port.write(to_send):
             raise IOError("Error sending command: did not send all bytes")
 
+    # Alternative receive_result
     """
     def receive_result(self, length):
         self.length = length
@@ -92,7 +105,6 @@ class TracerSerial(object):
 
         return self.from_bytes(buff)
     """
-
     def receive_result(self):
         buff = bytearray()
         read_idx = 0
@@ -109,7 +121,7 @@ class TracerSerial(object):
             buff += b
             if read_idx < len(self.sync_header) and b[0] != self.sync_header[read_idx]:
                 raise IOError("Error receiving result: invalid sync header")
-             #the location of the read length
+            #the location of the read length
             elif read_idx == 8:
                 to_read = b[0]
             read_idx += 1
@@ -140,9 +152,10 @@ class Tracer(object):
         return data
 
     def get_result(self, data):
-        #if data[1] == QueryCommand().code:
         if data[1] == 0xA0:
             return QueryResult(data[3:])
+        elif data[1] == 0xAA:
+            return LoadState(data[3])
 
     def verify_crc(self, data):
         """Returns true if the CRC embedded in the data is valid"""

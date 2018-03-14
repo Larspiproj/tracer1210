@@ -8,10 +8,11 @@
 
   <div>
     <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('load_off') }}">Load Off</a>
   </div>
   <hr>
 
-  <h2>Load is ON</h2>
+  <h2>Load is {{ load_state }}</h2>
 
   </div>
 </body>

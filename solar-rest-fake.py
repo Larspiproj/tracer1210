@@ -16,6 +16,9 @@ fake = bytearray(b'\xEB\x90\xEB\x90\xEB\x90\x00\xA0\x18\xD2\x04\xD3\x04 \
     \x00\x00\x0E\x00\x53\x04\xA5\x05\x01\x00\x00\x1F\x00\x00\x00\x01\x33 \
     \x0A\x00\x00\x99\x5B\x7F')
 
+fake_load_off = bytearray(b'\xEB\x90\xEB\x90\xEB\x90\x16\xAA\x01\x00\x99\x5B\x7F')
+fake_load_on = bytearray(b'\xEB\x90\xEB\x90\xEB\x90\x16\xAA\x01\x01\x99\x5B\x7F')
+
 class FakePort(object):
     def __init__(self, data):
         self.data = data
@@ -45,6 +48,7 @@ def get_data():
         tracer = Tracer(0x16)
         t_ser = TracerSerial(tracer, port)
         t_ser.send_command(0xA0)
+        #data = t_ser.receive_result(36)
         data = t_ser.receive_result()
         #port.close()
         # operating parameters
@@ -86,20 +90,36 @@ def get_data():
 
 @app.route('/load_on', methods=['GET'])
 def load_on():
-    port = Serial('/dev/ttyAMA0', 9600, timeout=1)
-    #port = FakePort(fake)
-    tracer = Tracer(0x16)
-    t_ser = TracerSerial(tracer, port)
-    t_ser.send_command(0xAA, 0x01, 0x01)
-    port.close()
-    return render_template('load_on.html')        
+    try:
+        #port = Serial('/dev/ttyAMA0', 9600, timeout=1)
+        port = FakePort(fake_load_on)
+        tracer = Tracer(0x16)
+        t_ser = TracerSerial(tracer, port)
+        t_ser.send_command(0xAA, 0x01, 0x01)
+        #data = t_ser.receive_result(13)
+        data = t_ser.receive_result()
+        #port.close()
+        load_state = data.load_state
+        return render_template('load_on.html', load_state=load_state)        
+    except (IndexError, IOError) as e:
+        #port.flushInput()
+        #port.flushOutput()
+        return jsonify({'error': str(e)}), 503
 
 @app.route('/load_off', methods=['GET'])
 def load_off():
-    port = Serial('/dev/ttyAMA0', 9600, timeout=1)
-    #port = FakePort(fake)
-    tracer = Tracer(0x16)
-    t_ser = TracerSerial(tracer, port)
-    t_ser.send_command(0xAA, 0x01, 0x00)
-    port.close()
-    return render_template('load_off.html') 
+    try:
+        #port = Serial('/dev/ttyAMA0', 9600, timeout=1)
+        port = FakePort(fake_load_off)
+        tracer = Tracer(0x16)
+        t_ser = TracerSerial(tracer, port)
+        t_ser.send_command(0xAA, 0x01, 0x00)
+        #data = t_ser.receive_result(13)
+        data = t_ser.receive_result()
+        #port.close()
+        load_state = data.load_state
+        return render_template('load_off.html', load_state=load_state) 
+    except (IndexError, IOError) as e:
+        #port.flushInput()
+        #port.flushOutput()
+        return jsonify({'error': str(e)}), 503
