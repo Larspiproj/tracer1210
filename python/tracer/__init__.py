@@ -8,6 +8,7 @@
 # Verified on SainSonic MPPT Tracer 1215RN Solar Charge Controller
 #   Regulator 12/24V INPUT 10A
 #
+from time import sleep
 
 class Result(object):
     """A command result from the controller."""
@@ -96,12 +97,13 @@ class TracerSerial(object):
         if len(to_send) != self.port.write(to_send):
             raise IOError("Error sending command: did not send all bytes")
 
-    # Alternative receive_result
     """
+    # Alternative receive_result
     def receive_result(self, length):
         self.length = length
-        waiting = self.port.in_waiting
-        buff = self.port.read(waiting)
+        print("in_waiting ", self.port.in_waiting)
+        buff = bytearray(self.port.read(length))
+        print("buff ", buff)
 
         return self.from_bytes(buff)
     """

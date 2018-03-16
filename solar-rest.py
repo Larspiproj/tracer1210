@@ -18,11 +18,12 @@ def index():
 def get_data():
     try:
         port = Serial('/dev/ttyAMA0', 9600, timeout=1)
-        port.flushInput()
-        port.flushOutput()
+        port.reset_input_buffer()
+        port.reset_output_buffer()
         tracer = Tracer(0x16)
         t_ser = TracerSerial(tracer, port)
         t_ser.send_command(0xA0)
+        sleep(1)
         #data = t_ser.receive_result(36)
         data = t_ser.receive_result()
         port.close()
@@ -59,8 +60,8 @@ def get_data():
                          batt_charging=batt_charging)
 
     except (IndexError, IOError) as e:
-        port.flushInput()
-        port.flushOutput()
+        port.reset_input_buffer()
+        port.reset_output_buffer()
         return jsonify({'error': str(e)}), 503
 
 @app.route('/load_on', methods=['GET'])
@@ -76,8 +77,8 @@ def load_on():
         load_state = data.load_state
         return render_template('load_on.html', load_state=load_state)        
     except (IndexError, IOError) as e:
-        port.flushInput()
-        port.flushOutput()
+        port.reset_input_buffer()
+        port.reset_output_buffer()
         return jsonify({'error': str(e)}), 503
 
 @app.route('/load_off', methods=['GET'])
@@ -93,6 +94,6 @@ def load_off():
         load_state = data.load_state
         return render_template('load_off.html', load_state=load_state) 
     except (IndexError, IOError) as e:
-        port.flushInput()
-        port.flushOutput()
+        port.reset_input_buffer()
+        port.reset_output_buffer()
         return jsonify({'error': str(e)}), 503
