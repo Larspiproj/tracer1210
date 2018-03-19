@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Tracer Solar Regulator interface for MT-5 display
 #
 # Based on document by alexruhmann@body-soft.de

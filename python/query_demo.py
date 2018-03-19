@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import serial
 from tracer import Tracer, TracerSerial #QueryCommand
 

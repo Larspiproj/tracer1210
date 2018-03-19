@@ -1,6 +1,11 @@
+import logging
+from logging.handlers import RotatingFileHandler
+import os
 from flask import Flask, render_template, url_for, jsonify
+from flask_debugtoolbar import DebugToolbarExtension
 from time import sleep
 from serial import Serial
+
 
 import sys
 sys.path.append('/home/pi/tracer1210/python')
@@ -8,6 +13,21 @@ from tracer import Tracer, TracerSerial
 
 # Rest API
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret key'
+toolbar = DebugToolbarExtension(app)
+
+if not app.debug:
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/tracer.log', maxBytes=10240,
+                                        backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+    file_handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(file_handler)
+
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.info('Tracer startup')
 
 @app.route('/')
 @app.route('/index')
