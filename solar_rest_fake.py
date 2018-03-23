@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, jsonify
-from time import sleep
+#from time import sleep
 from serial import Serial
 
 import sys
@@ -41,16 +41,12 @@ def index():
 @app.route('/solar', methods=['GET'])
 def get_data():
     try:
-        #port = Serial('/dev/ttyAMA0', 9600, timeout=1)
         port = FakePort(fake)
-        #port.flushInput()
-        #port.flushOutput()
         tracer = Tracer(0x16)
         t_ser = TracerSerial(tracer, port)
         t_ser.send_command(0xA0)
         #data = t_ser.receive_result(36)
         data = t_ser.receive_result()
-        #port.close()
         # operating parameters
         batt_voltage =  data.batt_voltage
         batt_full_voltage = data.batt_full_voltage
@@ -84,42 +80,32 @@ def get_data():
                          batt_charging=batt_charging)
 
     except (IndexError, IOError) as e:
-        #port.flushInput()
-        #port.flushOutput()
         return jsonify({'error': str(e)}), 503
 
 @app.route('/load_on', methods=['GET'])
 def load_on():
     try:
-        #port = Serial('/dev/ttyAMA0', 9600, timeout=1)
         port = FakePort(fake_load_on)
         tracer = Tracer(0x16)
         t_ser = TracerSerial(tracer, port)
         t_ser.send_command(0xAA, 0x01, 0x01)
         #data = t_ser.receive_result(13)
         data = t_ser.receive_result()
-        #port.close()
         load_state = data.load_state
         return render_template('load_on.html', load_state=load_state)        
     except (IndexError, IOError) as e:
-        #port.flushInput()
-        #port.flushOutput()
         return jsonify({'error': str(e)}), 503
 
 @app.route('/load_off', methods=['GET'])
 def load_off():
     try:
-        #port = Serial('/dev/ttyAMA0', 9600, timeout=1)
         port = FakePort(fake_load_off)
         tracer = Tracer(0x16)
         t_ser = TracerSerial(tracer, port)
         t_ser.send_command(0xAA, 0x01, 0x00)
         #data = t_ser.receive_result(13)
         data = t_ser.receive_result()
-        #port.close()
         load_state = data.load_state
         return render_template('load_off.html', load_state=load_state) 
     except (IndexError, IOError) as e:
-        #port.flushInput()
-        #port.flushOutput()
         return jsonify({'error': str(e)}), 503

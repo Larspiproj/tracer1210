@@ -3,7 +3,7 @@ from logging.handlers import RotatingFileHandler
 import os
 from flask import Flask, render_template, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-from time import sleep
+#from time import sleep
 from serial import Serial
 
 
@@ -43,7 +43,7 @@ def get_data():
         tracer = Tracer(0x16)
         t_ser = TracerSerial(tracer, port)
         t_ser.send_command(0xA0)
-        sleep(1)
+        #sleep(1)
         #data = t_ser.receive_result(36)
         data = t_ser.receive_result()
         port.close()

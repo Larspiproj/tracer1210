@@ -6,26 +6,25 @@
 # Verified on SainSonic MPPT Tracer 1215RN Solar Charge Controller
 #   Regulator 12/24V INPUT 10A
 #
-from time import sleep
 
+"""
 class Result(object):
-    """A command result from the controller."""
+    #A command result from the controller.
     props=[]
     def __init__(self, data):
         self.data = data
         self.decode(data)
 
     def to_float(self, two_bytes):
-        """Convert a list of two bytes into a floating point value."""
+        #Convert a list of two bytes into a floating point value.
         # convert two bytes to a float value
         return ((two_bytes[1] << 8) | two_bytes[0]) / 100.0
     def __str__(self):
         return "%s{%s}" % (self.__class__.__name__, ", ".join(map(lambda a: "%s: %s" % (a, getattr(self, a)), self.props)))
+"""
 
-class QueryResult(Result):
-    """The result of a query command."""
-    props=['batt_voltage', 'pv_voltage', 'load_amps', 'batt_overdischarge_voltage', 'batt_full_voltage', 'load_on', 'load_overload', 'load_short', 'batt_overload', 'batt_overdischarge', 'batt_full', 'batt_charging', 'batt_temp', 'charge_current']
-    def decode(self, data):
+class QueryResult(object):
+    def __init__(self, data):
         """Decodes the query result, storing results as fields"""
         if len(data) < 23:
             print("Not enough data. Need 23 bytes, got %d" % len(data))
@@ -46,17 +45,26 @@ class QueryResult(Result):
         self.batt_temp = data[20] - 30;
         self.charge_current = self.to_float(data[21:23])
 
+    def to_float(self, two_bytes):
+        """Convert a list of two bytes into a floating point value."""
+        # convert two bytes to a float value
+        return ((two_bytes[1] << 8) | two_bytes[0]) / 100.0
+
 
 class LoadState(object):
     def __init__(self, data):
         self.data = data
-        self.decode(data)
-
-    def decode(self, data):
         if self.data == 0:
             self.load_state = "OFF"
         else:
             self.load_state = "ON"
+        #self.decode(data)
+
+    #def decode(self, data):
+        #if self.data == 0:
+            #self.load_state = "OFF"
+        #else:
+            #self.load_state = "ON"
 
 class TracerSerial(object):
     """A serial interface to the Tracer"""
