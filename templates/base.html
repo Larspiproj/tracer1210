@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>{{ title }}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="static/topnav.css">
+<link rel="stylesheet" type="text/css" href="static/data.css">
+</head>
+<body>
+
+<div class="topnav" id="myTopnav">
+  <a href="{{ url_for('index') }}">Home</a>
+  <a href="{{ url_for('get_data') }}">Request Data</a>
+  <a href="{{ url_for('load_on') }}">Load On</a>
+  <a href="{{ url_for('load_off') }}">Load Off</a>
+  <a href="javascript:void(0);" style="font-size:15px;"
+class="icon" onclick="myFunction()">&#9776;</a>
+</div>
+
+{% block content %}{% endblock %}
+
+<script src="static/myfunction.js"></script>
+
+</body>
+</html>

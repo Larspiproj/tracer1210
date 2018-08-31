@@ -1,6 +1,18 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="static/data.css">
+<link rel="stylesheet" type="text/css" href="static/links.css">
+</head>
+<body>
 
-{% block content %}
+  <div>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('get_data') }}">Refresh</a>
+  </div>
+  <hr>
+
 <table id="data">
   <tr>
     <th>Data</th>
@@ -63,4 +75,8 @@
     <td>{{ batt_charging }}
   </tr>
 </table>
-{% endblock %}
+
+<p><a href="{{ url_for('get_data') }}">Refresh</a></p>
+
+</body>
+</html

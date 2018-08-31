@@ -32,7 +32,7 @@ if not app.debug:
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', title='home')
 
 @app.route('/solar', methods=['GET'])
 def get_data():

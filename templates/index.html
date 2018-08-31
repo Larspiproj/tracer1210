@@ -1,26 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="static/links.css">
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Welcome to Tracer-1206RN/1210RN/1215RN page
+{% block content %}
+<div class="content">
+<h2 style="font-size:3vw;">Welcome to Tracer-1206RN/1210RN/1215RN page
   for obtaining operating parameters.</h2>
-
-  <div>
-    <a href="{{ url_for('get_data') }}">Request Data</a>
-    <a href="{{ url_for('load_on') }}">Load On</a>
-    <a href="{{ url_for('load_off') }}">Load Off</a>
-  </div>
-<hr>
-
-<div>
-  <img src="static/PiSolar02-400x259.jpg" width="400" height="245">
-  <img src="static/PiSolar03-400x230.jpg" width="400" height="245">
-  <img src="static/PiSolar13-400x312.png" width="400" height="300">
 </div>
-
-</body>
-</html>
+{% endblock %}

@@ -1,19 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="static/links.css">
-</head>
-<body>
+{% extends "base.html" %}
 
-  <div>
-    <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('load_off') }}">Load Off</a>
-  </div>
-  <hr>
-
-  <h2>Load is {{ load_state }}</h2>
-
-  </div>
-</body>
-</html>
+{% block content %}
+<h2>Load is {{ load_state }}</h2>
+{% endblock %}

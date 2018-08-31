@@ -3,7 +3,8 @@ from flask import Flask, render_template, url_for, jsonify
 from serial import Serial
 
 import sys
-sys.path.append('/home/pi/tracer1210/python')
+#sys.path.append('/home/pi/tracer1210/python')
+sys.path.append('/home/user/tracer1210/python')
 from tracer import Tracer, TracerSerial
 
 
@@ -36,7 +37,7 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', title='Solar Home')
 
 @app.route('/solar', methods=['GET'])
 def get_data():
@@ -47,6 +48,7 @@ def get_data():
         t_ser.send_command(0xA0)
         #data = t_ser.receive_result(36)
         data = t_ser.receive_result()
+        """
         # operating parameters
         batt_voltage =  data.batt_voltage
         batt_full_voltage = data.batt_full_voltage
@@ -62,8 +64,16 @@ def get_data():
         batt_full = data.batt_full
         batt_overload = data.batt_overload
         batt_charging = data.batt_charging
+        """
+        """
+        print(data.__dict__)
+        print(vars(data))
+        print(dir(data))
+        return jsonify(vars(data))
+        """
 
-        return render_template('data.html',
+        """
+        return render_template('data.html', title='Request Data',
                          batt_voltage=batt_voltage,
                          batt_full_voltage=batt_full_voltage,
                          batt_overdischarge_voltage=batt_overdischarge_voltage,
@@ -78,9 +88,17 @@ def get_data():
                          batt_full=batt_full,
                          batt_overload=batt_overload,
                          batt_charging=batt_charging)
+        """
+        return jsonify(batt_voltage=data.batt_voltage,
+                       pv_voltage=data.pv_voltage,
+                       charge_current=data.charge_current,
+                       load_amps=data.load_amps)
 
-    except (IndexError, IOError) as e:
+    except (IndexError, IOError, Exception) as e:
         return jsonify({'error': str(e)}), 503
+        #e = str(e)
+        #return render_template ('error.html', title='Error',
+        #                                e=e)
 
 @app.route('/load_on', methods=['GET'])
 def load_on():
@@ -92,7 +110,9 @@ def load_on():
         #data = t_ser.receive_result(13)
         data = t_ser.receive_result()
         load_state = data.load_state
-        return render_template('load_on.html', load_state=load_state)        
+        return jsonify(vars(data))
+        #return render_template('load_on.html', title='Load On',
+        #                                load_state=load_state)        
     except (IndexError, IOError) as e:
         return jsonify({'error': str(e)}), 503
 
@@ -106,6 +126,7 @@ def load_off():
         #data = t_ser.receive_result(13)
         data = t_ser.receive_result()
         load_state = data.load_state
-        return render_template('load_off.html', load_state=load_state) 
+        return render_template('load_off.html', title="Load Off",
+                                        load_state=load_state) 
     except (IndexError, IOError) as e:
         return jsonify({'error': str(e)}), 503
