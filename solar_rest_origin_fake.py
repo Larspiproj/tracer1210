@@ -44,29 +44,29 @@ def get_data():
         t_ser.send_command(0xA0)
         data = t_ser.receive_result()
 
-        """
         data_list = [
-                    {'param': 'batt_voltage', 'solar': data.batt_voltage},
-                    {'param': 'pv_voltage', 'solar': data.pv_voltage},
-                    {'param': 'charge_current', 'solar': data.charge_current},
-                    {"param": 'load_amps', 'solar': data.load_amps}
+                    {"param": "batt_voltage", "solar": data.batt_voltage},
+                    {"param": "pv_voltage", "solar": data.pv_voltage},
+                    {"param": "charge_current", "solar": data.charge_current},
+                    {"param": "load_amps", "solar": data.load_amps}
                     ]
         print("data_list: ", data_list)
 
-        json_str = json.dumps(data_list)
-        print("json_str: ", json_str)
-        print("jsonify: ",jsonify(solar_data=json_str))
+        #json_str = json.dumps(data_list) xxxxxxxx
+        #print("json_str: ", json_str)    xxxxxxxx
+        #print("jsonify: ",jsonify(solar_data=json_str)) xxxxxxx
 
         #return jsonify(solar_data=json_str)
         #return json_str
         return jsonify(solar_data=data_list)
-        """
 
+
+        """
         return jsonify(batt_voltage=data.batt_voltage,
                        pv_voltage=data.pv_voltage,
                        charge_current=data.charge_current,
                        load_amps=data.load_amps)
-
+        """
     except (IndexError, IOError) as e:
         #port.flushInput()
         #port.flushOutput()
