@@ -44,29 +44,41 @@ def get_data():
         t_ser.send_command(0xA0)
         data = t_ser.receive_result()
 
-        """
         data_list = [
-                    {'param': 'batt_voltage', 'solar': data.batt_voltage},
-                    {'param': 'pv_voltage', 'solar': data.pv_voltage},
-                    {'param': 'charge_current', 'solar': data.charge_current},
-                    {"param": 'load_amps', 'solar': data.load_amps}
+                    {"param": "batt_voltage", "solar": data.batt_voltage},
+                    {"param": "batt_full_voltage", "solar": data.batt_full_voltage},
+                    {"param": "batt_overdischarge_voltage",
+                        "solar": data.batt_overdischarge_voltage},
+                    {"param": "batt_temp", "solar": data.batt_temp},
+                    {"param": "pv_voltage", "solar": data.pv_voltage},
+                    {"param": "charge_current", "solar": data.charge_current},
+                    {"param": "load_on", "solar": data.load_on},
+                    {"param": "load_amps", "solar": data.load_amps},
+                    {"param": "load_overload", "solar": data.load_overload},
+                    {"param": "load_short", "solar": data.load_short},
+                    {"param": "batt_overdischarge", "solar": data.batt_overdischarge},
+                    {"param": "batt_full", "solar": data.batt_full},
+                    {"param": "batt_overload", "solar": data.batt_overload},
+                    {"param": "batt_charging", "solar": data.batt_charging}
                     ]
-        print("data_list: ", data_list)
 
-        json_str = json.dumps(data_list)
-        print("json_str: ", json_str)
-        print("jsonify: ",jsonify(solar_data=json_str))
-
+        print ("jsonify type: ", type(jsonify(solar_data=data_list)))
+        #print("data_list: ", data_list)
+        #json_str = json.dumps(data_list) xxxxxxxx
+        #print("json_str: ", json_str)    xxxxxxxx
+        #print("jsonify: ",jsonify(solar_data=json_str)) xxxxxxx
         #return jsonify(solar_data=json_str)
         #return json_str
-        return jsonify(solar_data=data_list)
-        """
 
+        return jsonify(solar_data=data_list)
+
+
+        """
         return jsonify(batt_voltage=data.batt_voltage,
                        pv_voltage=data.pv_voltage,
                        charge_current=data.charge_current,
                        load_amps=data.load_amps)
-
+        """
     except (IndexError, IOError) as e:
         #port.flushInput()
         #port.flushOutput()
